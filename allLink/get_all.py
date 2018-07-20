@@ -6,8 +6,6 @@ Created on 2018年7月17日
 # coding: utf-8
 import requests
 import re
-from bokeh.server.tests.utils import url
-from anaconda_navigator.utils.py3compat import request
 
 '''
 获取要爬取的首页url
@@ -156,10 +154,10 @@ class Spider():
         print(f"终于爬完了,一共是{x-2}个url")
         return self.linkQuence.visited
     
-def writetofile(list):
+def writetofile(urls):
     # 因为第一个爬取的页面为爬虫入口,非需要的博文网址,因此从[1]开始写入
     x=1
-    for url in list[1:]:
+    for url in urls[1:]:
         # urls.txt用于保存博文标题和博文链接,文件夹demo创建好,或者加入os也行,反正很简单
         # file = open('F://demo/urls.txt', 'a', encoding='utf8')
         file = open('./urls.txt', 'a', encoding='utf8')
