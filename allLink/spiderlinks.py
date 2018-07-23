@@ -7,6 +7,7 @@ Created on 2018年7月17日
 
 import requests
 import re
+import time
 
 '''
 获取url中的链接
@@ -40,21 +41,21 @@ def spiderpage(url):
 def filter_url(pagelinks, base_domain):
     target_url = []
     for link in pagelinks:
-        print('待验证的url：', link)
+#         print('待验证的url：', link)
 #         if re.match(r'(http://www.taoshouyou.com).*?|(https://www.taoshouyou.com).*?|(/).+?', link):
 #         if re.match(r'(http://www.taoshouyou.com).*?|(https://www.taoshouyou.com).*?|(https://).*?(.taoshouyou.com)|(http://).*?(.taoshouyou.com)', link):
         if re.match(r'(https://).*?(.taoshouyou.com)|(http://).*?(.taoshouyou.com)', link):
             target_url.append(link)
-            print(r'    验证通过：\n', link)
+#             print(r'    验证通过：\n', link)
         elif re.match(r'(/).+?', link):
 #             link = 'http://www.taoshouyou.com' + link
 #             link = 'https://m.taoshouyou.com' + link
             link = base_domain + link
-            print(r'    验证通过：\n', link)
+#             print(r'    验证通过：\n', link)
             target_url.append(link)
-    print(r'**以下为验证通过的link集合**')
-    for link in target_url:
-        print(link)
+#     print(r'**以下为验证通过的link集合**')
+#     for link in target_url:
+#         print(link)
     return target_url
 
 '''
@@ -109,9 +110,10 @@ class linkQuence:
     
 
 class Spider():
-    def __init__(self, url):
+    def __init__(self, url, base_domain):
         self.linkQuence = linkQuence()  # 将队列引入本类
-        self.linkQuence.addunvisitedurl(url)  # 传入待爬取的url,即入口
+        self.linkQuence.add_unvisited(url)  # 传入待爬取的url,即入口
+        self.base_domain = base_domain
 
     def crawler(self, urlcount):
         # 子页面过多,为测试方便加入循环控制子页面数量
@@ -122,13 +124,16 @@ class Spider():
             if x > 1:
                 print(f"第{x-1}个url,开始爬")
             visitedurl = self.linkQuence.pop_unvisited()  # 从未访问列表中pop出一个url
-            if visitedurl is None or visitedurl == '':
+            print(visitedurl)
+            if visitedurl is None or visitedurl == '':  # 初始状态
                 continue
             initial_links = spiderpage(visitedurl)  # 爬出该url页面中所有的链接
-            right_links = filter(initial_links) # 筛选出合格的链接
-            self.linkQuence.addvisitedurl(visitedurl)  # 将该url放到访问过的url队列中
+            right_links = filter_url(initial_links, base_domain) # 筛选出合格的链接
+            self.linkQuence.add_visited(visitedurl)  # 将该url放到访问过的url队列中
             for link in right_links:  # 将筛选出的链接放到未访问队列中
-                self.linkQuence.addunvisitedurl(link)
+                self.linkQuence.add_unvisited(link)
+#             for i in range(len(right_links)):
+#                 self.linkQuence.add_visited(right_links[i])
             x += 1
         print(f"终于爬完了,一共是{x-2}个url")    # ？？？
         return self.linkQuence.visited
@@ -136,10 +141,13 @@ class Spider():
 '''
 有点问题（when mode='a'）
 '''
-def write(content, path, mode):
+def write(content, path, mode='w'):
     file = open(path, mode, encoding='utf-8')
     file.write(content)
     file.close()
+    
+
+    
 
 if __name__ == '__main__':
 #     spiderpage(r'https://www.taoshouyou.com')
@@ -149,12 +157,25 @@ if __name__ == '__main__':
     
 #     url = r'http://www.cdt0-microh5.taoshouyou.com'
 #     url = r'http://microh5.taoshouyou.com/index'
-    url = r'https://m.taoshouyou.com'
-    base_domain = r'https://m.taoshouyou.com'
-    pagelinks = spiderpage(url, base_domain)
-    filter_url(pagelinks)
 
-    spider = Spider(url)
+    url = r'https://m.taoshouyou.com'
+#     base_domain = r'https://m.taoshouyou.com'
+    base_domain = url
+    
+#     pagelinks = spiderpage(url, base_domain)
+#     filter_url(pagelinks)
+
+    start_time = time.strftime('%Y-%m-%d %H:%M:%S')
+    spider = Spider(url, base_domain)
     #传入要爬取的子链接数量
-    urllist = spider.crawler(20)
-    write(urllist, r'./urllist.txt', 'w')
+    url_list = spider.crawler(20)
+    end_time = time.strftime('%Y-%m-%d %H:%M:%S')
+    time_div = end_time - start_time
+    print(time_div)
+#     write(urllist, r'../output/urllist.txt', 'w')
+    file = open(r'../output/urllist3.txt', 'a', encoding='utf-8')
+    for link in url_list:
+        file.write(link+'\n')
+    file.write(start_time+'\n')
+    file.write(end_time+'\n')
+    file.close()
