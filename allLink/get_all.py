@@ -1,9 +1,10 @@
+# coding: utf-8
 '''
 Created on 2018年7月17日
 
 @author: 27419
 '''
-# coding: utf-8
+
 import requests
 import re
 

@@ -1,5 +1,7 @@
 eclipse.preferences.version=1
 encoding//allLink/__init__.py=utf-8
+encoding//allLink/get_all.py=utf-8
+encoding//allLink/spiderlinks.py=utf-8
 encoding//database/connmysql.py=utf-8
 encoding//juan/scan_cdt0_microh5.py=utf-8
 encoding/<project>=UTF-8
