@@ -28,6 +28,7 @@ def spiderpage(url):
     # write(pagetext, r'./pagetext-goods.txt', 'w')
     
     # 正则表达式表示要爬取的是<a href="和"中的内容,"或'都可以,即当前页面下所有的链接url,返回列表
+    # (?<=...) 之前的字符串内容需要匹配表达式才能匹配成功。不消耗字符串内容。
     pagelinks = re.findall(r'(?<=<a href=\").*?(?=\")|(?<=href=\').*?(?=\')', pagetext)
     
     # for i in range(len(pagelinks)):
@@ -165,17 +166,17 @@ if __name__ == '__main__':
 #     pagelinks = spiderpage(url, base_domain)
 #     filter_url(pagelinks)
 
+    t = time.time()
     start_time = time.strftime('%Y-%m-%d %H:%M:%S')
     spider = Spider(url, base_domain)
     #传入要爬取的子链接数量
-    url_list = spider.crawler(20)
+    url_list = spider.crawler(10)
     end_time = time.strftime('%Y-%m-%d %H:%M:%S')
-    time_div = end_time - start_time
-    print(time_div)
-#     write(urllist, r'../output/urllist.txt', 'w')
-    file = open(r'../output/urllist3.txt', 'a', encoding='utf-8')
-    for link in url_list:
-        file.write(link+'\n')
+    file = open(r'../output/urllist_'+str(t)+r'.txt', 'a', encoding='utf-8')
     file.write(start_time+'\n')
     file.write(end_time+'\n')
+ 
+    for link in url_list:
+        file.write(link+'\n')
+
     file.close()
